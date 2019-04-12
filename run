@@ -1,39 +1,26 @@
 #!/bin/bash
 # Author:why (E-mail:wuhaoyu2222@gmail.com)
 
-function linux()
-{
-    # install
-    sudo apt install shadowsocks
+# install
+sudo apt install shadowsocks
+# update config.json
+sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
+sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
+sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
+sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
+sed -i -e "/worker/d" /etc/shadowsocks/config.json
 
-    # update config.json
-    sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
-    sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
-    sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
-    sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
-    sed -i -e "/worker/d" /etc/shadowsocks/config.json
+# auto boot
+sed -i -e "/sslocal -c /etc/shadowsocks/config.json &/aallow exit 0" /etc/rc.local
 
-    # auto boot
-    sed -i -e "/sslocal -c /etc/shadowsocks/config.json &/aallow exit 0" /etc/rc.local
-
-    # config  proxy
-    sudo apt-get install polipo
-    sudo chmod 777 /etc/polipo/config
-    echo -e "socksParentProxy = "localhost:1080"\nsocksProxyType = socks5\nlogLevel=4" >> /etc/polipo/config
-    sudo chmod 644 /etc/polipo/config
-    sudo service polipo stop
-    sudo service polipo start
-    echo -e "# shadowsocks\nalias hs="http_proxy=http://localhost:8123"\ngs=" --config http.proxy=localhost:8123"" >> ~/.bashrc
-    source ~/.bashrc
-}
+# config  proxy
+sudo apt-get install polipo
+sudo chmod 777 /etc/polipo/config
+echo -e "socksParentProxy = "localhost:1080"\nsocksProxyType = socks5\nlogLevel=4" >> /etc/polipo/config
+sudo chmod 644 /etc/polipo/config
+sudo service polipo stop
+sudo service polipo start
+echo -e "# shadowsocks\nalias hs="http_proxy=http://localhost:8123"\ngs=" --config http.proxy=localhost:8123"" >> ~/.bashrc
+source ~/.bashrc
 
 
-name=`uname -s`
-case $name in
-    "Linux")
-        linux
-        ;;
-    "Darwin")
-        mac
-        ;;
-esac
