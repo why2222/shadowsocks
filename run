@@ -10,6 +10,9 @@ sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
 sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
 sed -i -e "/worker/d" /etc/shadowsocks/config.json
 
+#the background to start
+sslocal -c /etc/shadowsocks/config.json &
+
 # auto boot
 sed -i -e "/sslocal -c /etc/shadowsocks/config.json &/aallow exit 0" /etc/rc.local
 
