@@ -7,15 +7,14 @@ function linux()
     sudo apt install shadowsocks
 
     # update config.json
-    sed -i "2s/my_server_ip/$1/g /etc/shadowsocks/config.json"
-    sed -i "3s/my_server_port/$2/g /etc/shadowsocks/config.json"
-    sed -i "6s/my_password/$3/g /etc/shadowsocks/config.json"
-    sed -i "9s/false,/false/g /etc/shadowsocks/config.json"
-    sed -i -e "10s/dd /etc/shadowsocks/config.json"
+    sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
+    sed -i "3s/my_server_port/$2/g" /etc/shadowsocks/config.json
+    sed -i "6s/my_password/$3/g" /etc/shadowsocks/config.json
+    sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
+    sed -i -e "10s/dd" /etc/shadowsocks/config.json
 
     # auto boot
-    echo 'sslocal -c /etc/shadowsocks/config.json &' >> /etc/rc.local
-    echo "exit 0" >> /etc/rc.local
+    sed -i -e "/sslocal -c /etc/shadowsocks/config.json &/aallow exit 0" /etc/rc.local
 
     # config  proxy
     sudo apt-get install polipo
@@ -24,13 +23,10 @@ function linux()
     sudo chmod 644 /etc/polipo/config
     sudo service polipo stop
     sudo service polipo start
-    echo -e "# shadowsocks\nalias hs="http_proxy=http://localhost:8123"\ngs=" --config http.proxy=localhost:8123""
+    echo -e "# shadowsocks\nalias hs="http_proxy=http://localhost:8123"\ngs=" --config http.proxy=localhost:8123"" >> ~/.bashrc
     source ~/.bashrc
 }
 
-function mac()
-{
-}
 
 name=`uname -s`
 case $name in
