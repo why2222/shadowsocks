@@ -8,10 +8,10 @@ function linux()
 
     # update config.json
     sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
-    sed -i "3s/my_server_port/$2/g" /etc/shadowsocks/config.json
-    sed -i "6s/my_password/$3/g" /etc/shadowsocks/config.json
+    sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
+    sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
     sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
-    sed -i "10d" /etc/shadowsocks/config.json
+    sed -i -e "/worker/d" /etc/shadowsocks/config.json
 
     # auto boot
     sed -i -e "/sslocal -c /etc/shadowsocks/config.json &/aallow exit 0" /etc/rc.local
