@@ -2,7 +2,7 @@
 # Author:why (E-mail:wuhaoyu2222@gmail.com)
 
 # install
-sudo apt install shadowsocks
+apt install shadowsocks
 # update config.json
 sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
 sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
