@@ -1,27 +1,51 @@
 #!/bin/bash
 # Author:why (E-mail:wuhaoyu2222@gmail.com)
 
-# install
-apt install shadowsocks
-# update config.json
-sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
-sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
-sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
-sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
-sed -i -e "/worker/d" /etc/shadowsocks/config.json
+# test ip
+function ipTest()
+{    
+    ip=$1
+    received=`ping $ip -c 3 | grep received | awk 'BEGIN{FS=","}{print $2}' | awk '{print $1}'`
+    if [ $received -eq 0 ]
+        then
+            return 0
+        else
+            return 1
+    fi        
+        
+}
+if [ -n "$1"]
+    then
+        ipTest
+        if [ $? -eq 1 ]
+            then
+                # install
+                apt install shadowsocks
+                # update config.json
+                sed -i "2s/my_server_ip/$1/g" /etc/shadowsocks/config.json
+                sed -i "3s/8388/$2/g" /etc/shadowsocks/config.json
+                sed -i "6s/mypassword/$3/g" /etc/shadowsocks/config.json
+                sed -i "9s/false,/false/g" /etc/shadowsocks/config.json
+                sed -i -e "/worker/d" /etc/shadowsocks/config.json
+    
+                #the background to start
+                sslocal -c /etc/shadowsocks/config.json &
 
-#the background to start
-sslocal -c /etc/shadowsocks/config.json &
+                # auto boot
+                sudo sed -i "s/exit 0/sslocal -c \/etc\/shadowsocks\/config.json \& \nexit 0/g" /etc/rc.local
 
-# auto boot
-sudo sed -i "s/exit 0/sslocal -c \/etc\/shadowsocks\/config.json \& \nexit 0/g" /etc/rc.local
-
-# config  proxy
-sudo apt-get install polipo
-sudo chmod 777 /etc/polipo/config
-echo -e "socksParentProxy = "localhost:1080"\nsocksProxyType = socks5\nlogLevel=4" >> /etc/polipo/config
-sudo chmod 644 /etc/polipo/config
-sudo service polipo stop
-sudo service polipo start
-echo -e "# shadowsocks\nalias hs=\"http_proxy=http://localhost:8123\"\ngs=\" --config http.proxy=localhost:8123\"" >> ~/.bashrc
-source ~/.bashrc
+                # config  proxy
+                sudo apt-get install polipo
+                sudo chmod 777 /etc/polipo/config
+                echo -e "socksParentProxy = "localhost:1080"\nsocksProxyType = socks5\nlogLevel=4" >> /etc/polipo/config
+                sudo chmod 644 /etc/polipo/config
+                sudo service polipo stop
+                sudo service polipo start
+                echo -e "# shadowsocks\nalias hs=\"http_proxy=http://localhost:8123\"\ngs=\" --config http.proxy=localhost:8123\"" >> ~/.bashrc
+                source ~/.bashrc
+            else
+                echo "Please input valid ip!"
+        fi
+    else
+        echo "Please input correct parameters!"
+fi
